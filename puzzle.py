@@ -32,3 +32,20 @@ class PuzzleSolver():
 					return (i,j)
 		return (0,0)
 	
+	### keys generated which indicates the possible movements on the basis of current position of blank tile
+	def setCombos(self):
+		for_00 = [(0,1), (1,0)]
+		for_01 = [(0,0), (0,2), (1,1)]
+		for_02 = [(0,1), (1,2)]
+		for_10 = [(0,0), (1,1), (2,0)]
+		for_11 = [(0,1), (1,0), (1,2), (2,1)]
+		for_12 = [(0,2), (1,1), (2,2)]
+		for_20 = [(1,0), (2,1)]
+		for_21 = [(2,0), (1,1), (2,2)]
+		for_22 = [(2,1), (1,2)]
+		self.all_combi = [[for_00,for_01,for_02],[for_10,for_11,for_12],[for_20,for_21,for_22]]
+		pass
+
+	### Returns possible combinations for a given zero position
+	def possible_combination(self, zero_position):
+		return self.all_combi[zero_position[0]][zero_position[1]]
