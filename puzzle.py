@@ -49,3 +49,25 @@ class PuzzleSolver():
 	### Returns possible combinations for a given zero position
 	def possible_combination(self, zero_position):
 		return self.all_combi[zero_position[0]][zero_position[1]]
+
+	## pos1 -- (x,y)  ----- pos2 -- (new_x, new_y)
+	## state_to_change ----- array
+	## return new_array
+	def swap_values(self, state_to_change, old_pos_of_zero, new_pos_of_zero):
+		new_state = np.copy(state_to_change) ### Creating a copy for new state
+		## Swapping the values
+		new_state[old_pos_of_zero] = new_state[new_pos_of_zero] 
+		new_state[new_pos_of_zero] = 0
+		return new_state
+
+	def giveNewStates(self, oldState, pos):
+		newMoves = self.possible_combination(self.find_blank(current_state))
+		# newMoves.remove(oldState)
+		local_states = []
+		for move in newMoves:
+			self.pastMoves.append(move)
+			newState = self.swap_values(oldState, pos, move)
+			if not self.checkGoal(newState):
+				if not self.checkStateInData(newState):
+					local_states.append(newState)
+		return local_states
