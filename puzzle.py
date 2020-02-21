@@ -25,4 +25,10 @@ class PuzzleSolver():
 		self.startEndIndexOfNode = [[0,0]]
 		self.solved_state = None
 
+	def find_blank(self, current_state):
+		for i in range(current_state.shape[0]):
+			for j in range(current_state.shape[1]):
+				if current_state[i,j]==0:
+					return (i,j)
+		return (0,0)
 	
