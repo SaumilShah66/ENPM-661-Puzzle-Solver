@@ -150,3 +150,13 @@ class PuzzleSolver():
 			self.startEndIndexOfNode.append([e, child_index-1])
 			print(str(child_index)+" ran")
 		pass
+
+	def backTrack(self):
+		self.bestMoves = []
+		self.bestMoves.append(self.final)
+		stateData = self.solved_state
+		while stateData[0]>0:
+			self.bestMoves.append(self.all_states_[stateData[2]])
+			stateData = self.main_data[stateData[2]]
+		self.bestMoves.reverse()
+		return self.bestMoves
