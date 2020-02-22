@@ -71,3 +71,17 @@ class PuzzleSolver():
 				if not self.checkStateInData(newState):
 					local_states.append(newState)
 		return local_states
+
+	#### Checks if state is already achieved in the enrire tree
+	def checkStateInData(self, check_state):
+		for s in self.all_states_:
+			if np.array_equal(s, check_state):
+				return False
+			else:
+				pass
+		self.all_states_.append(check_state)
+		return True
+
+	#### Checks if goal is reached
+	def checkGoal(self, state):
+		return np.array_equal(state, self.final)
