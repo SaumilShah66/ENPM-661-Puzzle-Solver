@@ -160,3 +160,17 @@ class PuzzleSolver():
 			stateData = self.main_data[stateData[2]]
 		self.bestMoves.reverse()
 		return self.bestMoves
+
+	def solveCondition(self):
+		count = 0
+		state = self.initial.ravel()
+		for i in range(8):
+			j= i+1
+			while(j<9):
+				if(state[j] and state[i] and state[i]>state[j]):
+					count+=1
+				j+=1
+		if(count%2):
+			return False
+		else:
+			return True
