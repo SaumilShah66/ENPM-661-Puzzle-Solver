@@ -85,3 +85,68 @@ class PuzzleSolver():
 	#### Checks if goal is reached
 	def checkGoal(self, state):
 		return np.array_equal(state, self.final)
+
+	def firstMove(self, state):
+		current_state = np.copy(state)
+		current_blank = self.find_blank(current_state)
+		combos_for_current_state = self.possible_combination(current_blank)
+		start = 1
+		for child_index in range(len(combos_for_current_state)):
+			temp_state = self.swap_values(current_state, current_blank, combos_for_current_state[child_index])
+			if self.checkGoal(temp_state):
+				self.main_data.append([1,child_index+1,0])
+				self.solved_state = [1,child_index+1,0]
+				break
+			else:
+				self.all_states_.append(temp_state)
+				self.pastMoves.append(current_blank)
+				self.main_data.append([1,child_index+1,0])
+				pass
+			pass
+		self.startEndIndexOfNode.append([start, child_index+1])
+		pass
+
+	def solvePuzzle(self):
+		self.firstMove(self.initial)
+		current_node = 1
+		child_index = self.main_data[-1][1]+1
+		while (not self.solved):
+			current_node += 1
+			new_states = []
+			print("Node number : "+str(current_node))
+			s, e = self.startEndIndexOfNode[current_node-1][0] , self.startEndIndexOfNode[current_node-1][1] +1
+			print("start = "+str(s))
+			print("end = "+str(e))
+			for parent_ids in range(s,e):
+				if not self.solved:
+					current_state_ = self.all_states_[parent_ids]
+					current_blank = self.find_blank(current_state_)
+					combos_for_current_state = self.possible_combination(current_blank)
+					past_move = self.pastMoves[parent_ids]
+					# print(past_move, combos_for_current_state)
+					# print(self.pastMoves)
+					# print("last_move : " + str(past_move))
+					# print(past_move , combos_for_current_state)
+					# combos_for_current_state.remove(past_move)
+					for newpose in combos_for_current_state:
+						if not self.solved:
+							# print(str(parent_index))
+							temp_state = self.swap_values(current_state_, current_blank, newpose)
+							if self.checkGoal(temp_state):
+								print("Found the match")
+								print(temp_state)
+								self.solved = True
+								self.solved_state = [current_node , child_index, parent_ids]
+								self.main_data.append([current_node , child_index, parent_ids])
+								self.all_states_.append(temp_state)
+								break
+							elif self.checkStateInData(temp_state):
+								# print(temp_state)
+								self.pastMoves.append(current_blank)
+								self.main_data.append([current_node , child_index, parent_ids])
+								child_index += 1
+							else:
+								pass
+			self.startEndIndexOfNode.append([e, child_index-1])
+			print(str(child_index)+" ran")
+		pass
