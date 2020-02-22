@@ -203,3 +203,16 @@ class PuzzleSolver():
 			tmp[i,:] = (self.bestMoves[i].T).ravel()
 		np.savetxt("nodesPath.txt",tmp, delimiter=" ", fmt='%i')
 		pass
+
+start = time.time()
+puzz = PuzzleSolver(initial)
+if puzz.solveCondition():
+	print("Solving puzzle")
+	puzz.solvePuzzle()
+	move = puzz.backTrack()
+	print(move)
+	puzz.saveFiles()
+else:
+	print("Puzzle cannot be solved")
+
+print("Time taken : " + str(time.time() - start))
