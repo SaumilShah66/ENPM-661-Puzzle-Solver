@@ -174,3 +174,32 @@ class PuzzleSolver():
 			return False
 		else:
 			return True
+
+	#### Saves all the files
+	def saveFiles(self):
+		self.nodesPathTxt()
+		self.nodesTxt()
+		self.nodesInfoTxt()
+
+	#### saves nodes
+	def nodesTxt(self):
+		tmp = np.zeros((len(self.all_states_),9), dtype = np.int8)
+		for i in range(len(self.all_states_)):
+			tmp[i,:] = (self.all_states_[i].T).ravel()
+		np.savetxt("Nodes.txt", tmp, delimiter=" ",fmt='%i')
+	
+	#### saves info about all the nodes
+	def nodesInfoTxt(self):
+		tmp = np.zeros((len(self.main_data),2), dtype = np.int32)
+		for i in range(len(self.main_data)):
+			tmp[i,0] = self.main_data[i][1]
+			tmp[i,1] = self.main_data[i][2]
+		np.savetxt("NodesInfo.txt", tmp, delimiter=" ",fmt='%i')
+
+	#### Saves optimum paths
+	def nodesPathTxt(self):
+		tmp = np.zeros((len(self.bestMoves), 9), dtype=np.int8)
+		for i in range(len(self.bestMoves)):
+			tmp[i,:] = (self.bestMoves[i].T).ravel()
+		np.savetxt("nodesPath.txt",tmp, delimiter=" ", fmt='%i')
+		pass
