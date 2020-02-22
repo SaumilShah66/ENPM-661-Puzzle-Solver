@@ -1,8 +1,10 @@
 import numpy as np
 import time
+import argparse
+
 # initial = np.array([[1,2,3],[4,0,5],[7,8,6]], dtype=np.int8)
-# initial = np.array([[1,0,3],[4,2,5],[7,8,6]], dtype=np.int8) ##3
-initial = np.array([[4,5,0],[2,3,8],[1,7,6]], dtype=np.int8) ###16
+initial = np.array([[1,0,3],[4,2,5],[7,8,6]], dtype=np.int8) ##3
+# initial = np.array([[4,5,0],[2,3,8],[1,7,6]], dtype=np.int8) ###16
 final = np.array([[1,2,3],[4,5,6],[7,8,0]], dtype=np.int8)
 
 class PuzzleSolver():
@@ -11,7 +13,7 @@ class PuzzleSolver():
 		self.final = np.array([[1,2,3],[4,5,6],[7,8,0]], dtype=np.int8)
 		self.current_state = None
 		self.setCombos()
-		## Data structure : [ node_id , child_id , parent_id ]
+		## Data structure : [ node_id , child_id , parent_id ]		
 		self.main_data = [[0,0,0]]
 		self.new_state = None
 		## All states will be saved here
@@ -31,7 +33,7 @@ class PuzzleSolver():
 				if current_state[i,j]==0:
 					return (i,j)
 		return (0,0)
-	
+
 	### keys generated which indicates the possible movements on the basis of current position of blank tile
 	def setCombos(self):
 		for_00 = [(0,1), (1,0)]
@@ -49,7 +51,7 @@ class PuzzleSolver():
 	### Returns possible combinations for a given zero position
 	def possible_combination(self, zero_position):
 		return self.all_combi[zero_position[0]][zero_position[1]]
-
+	
 	## pos1 -- (x,y)  ----- pos2 -- (new_x, new_y)
 	## state_to_change ----- array
 	## return new_array
@@ -87,15 +89,20 @@ class PuzzleSolver():
 		return np.array_equal(state, self.final)
 
 	def firstMove(self, state):
+		if self.checkGoal(state):
+			self.solved = True
+			self.solved_state = [state]
+			return
 		current_state = np.copy(state)
 		current_blank = self.find_blank(current_state)
 		combos_for_current_state = self.possible_combination(current_blank)
 		start = 1
 		for child_index in range(len(combos_for_current_state)):
 			temp_state = self.swap_values(current_state, current_blank, combos_for_current_state[child_index])
-			if self.checkGoal(temp_state):
+			if self.checkGoal(temp_state) and not self.solved:
 				self.main_data.append([1,child_index+1,0])
 				self.solved_state = [1,child_index+1,0]
+				self.solved = True
 				break
 			else:
 				self.all_states_.append(temp_state)
@@ -104,7 +111,7 @@ class PuzzleSolver():
 				pass
 			pass
 		self.startEndIndexOfNode.append([start, child_index+1])
-		pass
+		return
 
 	def solvePuzzle(self):
 		self.firstMove(self.initial)
@@ -155,10 +162,14 @@ class PuzzleSolver():
 		self.bestMoves = []
 		self.bestMoves.append(self.final)
 		stateData = self.solved_state
-		while stateData[0]>0:
-			self.bestMoves.append(self.all_states_[stateData[2]])
-			stateData = self.main_data[stateData[2]]
-		self.bestMoves.reverse()
+		try:
+			while stateData[0]>0:
+				self.bestMoves.append(self.all_states_[stateData[2]])
+				stateData = self.main_data[stateData[2]]
+			self.bestMoves.reverse()
+		except:
+			# self.bestMoves.append(stateData)
+			pass
 		return self.bestMoves
 
 	def solveCondition(self):
@@ -204,15 +215,26 @@ class PuzzleSolver():
 		np.savetxt("nodesPath.txt",tmp, delimiter=" ", fmt='%i')
 		pass
 
-start = time.time()
-puzz = PuzzleSolver(initial)
-if puzz.solveCondition():
-	print("Solving puzzle")
-	puzz.solvePuzzle()
-	move = puzz.backTrack()
-	print(move)
-	puzz.saveFiles()
+Parser = argparse.ArgumentParser()
+Parser.add_argument('--Initial', default='1,2,3,4,5,6,7,8,0', help='Give your initial state which you want to solve')
+Args = Parser.parse_args()
+init = Args.Initial
+init = init.split(',')
+initial_ = np.array([int(num) for num in init],dtype=np.int8)
+initial_ = initial_.reshape((3,3))
+print(initial_.shape)
+if initial_.any()>8 or initial_.any()<0:
+	print("Wrong data ")
 else:
-	print("Puzzle cannot be solved")
+	start = time.time()
+	puzz = PuzzleSolver(initial_)
+	if puzz.solveCondition():
+		print("Solving puzzle")
+		puzz.solvePuzzle()
+		move = puzz.backTrack()
+		print(move)
+		puzz.saveFiles()
+	else:
+		print("Puzzle cannot be solved")
 
-print("Time taken : " + str(time.time() - start))
+	print("Time taken : " + str(time.time() - start))
